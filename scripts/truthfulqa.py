@@ -1,5 +1,6 @@
 import json
 import random
+import os
 from datasets import load_dataset
 
 # TruthfulQA
@@ -70,9 +71,17 @@ def format_audit_entry(row):
 audit_dataset = [format_audit_entry(row) for row in ds]
 audit_dataset = [x for x in audit_dataset if x is not None]
 
+script_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(script_dir)
+
+output_dir = os.path.join(project_root, "data", "processed")
+output_file = os.path.join(output_dir, "sycophancy_audit_dataset_filtered.jsonl")
+os.makedirs(output_dir, exist_ok=True)
+
 # save as JSONL
-with open("sycophancy_audit_dataset_filtered.jsonl", "w") as f:
+with open(output_file, "w") as f:
     for entry in audit_dataset:
         f.write(json.dumps(entry) + "\n")
 
 print(f"Generated {len(audit_dataset)} audit pairs.")
+print(f"Saved to: {output_file}")
